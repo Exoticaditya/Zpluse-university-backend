@@ -1,0 +1,92 @@
+<!-- 
+  ==============================================================
+  Zplus Admin Dashboard - "Quick Add via Scraper" Component
+  (Insert this snippet into your admin panel HTML/React)
+  ============================================================== 
+-->
+
+<div class="scraper-card" style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin-bottom: 24px; background: #fff;">
+  <h3 style="margin-top: 0; font-size: 1.125rem; font-weight: 600;">⚡ Quick Add via Scraper</h3>
+  <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 16px;">
+    Enter a college website URL to automatically extract its name, description, logo, and cover image.
+  </p>
+  
+  <form id="scraperForm" style="display: flex; gap: 12px; align-items: center;">
+    <input 
+      type="url" 
+      id="collegeUrl" 
+      placeholder="https://www.example-university.edu" 
+      required
+      style="flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+    >
+    <button 
+      type="submit" 
+      id="scrapeBtn"
+      style="background: #2563eb; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 500;"
+    >
+      <span>Generate Page</span>
+      <div id="scrapeSpinner" style="display: none; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </button>
+  </form>
+
+  <div id="scrapeResult" style="margin-top: 16px; display: none;"></div>
+</div>
+
+<style>
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  .success-msg { color: #059669; font-weight: 500; font-size: 0.875rem; }
+  .error-msg { color: #dc2626; font-weight: 500; font-size: 0.875rem; }
+</style>
+
+<script>
+  document.getElementById('scraperForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const urlInput = document.getElementById('collegeUrl').value;
+    const btn = document.getElementById('scrapeBtn');
+    const spinner = document.getElementById('scrapeSpinner');
+    const resultDiv = document.getElementById('scrapeResult');
+    
+    // UI Loading State
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    resultDiv.style.display = 'none';
+    resultDiv.className = '';
+    
+    try {
+      // Get Admin JWT (Assuming stored in localStorage)
+      const token = localStorage.getItem('supabaseAuthToken'); 
+      
+      const response = await fetch('http://localhost:5000/api/v1/colleges/scrape-and-create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ target_url: urlInput })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.message || 'Failed to scrape college');
+      
+      // Success
+      resultDiv.className = 'success-msg';
+      resultDiv.innerHTML = `✅ Successfully created: <strong>${data.data.name}</strong>`;
+      
+      // NOTE: Here you would typically map `data.data` to the React/UI state to prepopulate the form
+      // e.g., setFormState(data.data);
+      
+      document.getElementById('collegeUrl').value = ''; // Reset input
+      
+    } catch (err) {
+      resultDiv.className = 'error-msg';
+      resultDiv.innerHTML = `❌ Error: ${err.message}`;
+    } finally {
+      // Reset UI
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      resultDiv.style.display = 'block';
+    }
+  });
+</script>

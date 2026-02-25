@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────
+#  render.yaml — Render Blueprint for Zplus University API
+# ─────────────────────────────────────────────────────────
+# Docs: https://docs.render.com/blueprint-spec
+#
+# Usage:
+#   1. Push this repo to GitHub
+#   2. Go to Render Dashboard → New → Blueprint
+#   3. Connect the repo — Render reads this file automatically
+#   4. Add environment variables in the Render dashboard
+# ─────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: zplus-university-api
+    runtime: node
+    region: oregon                    # or singapore, frankfurt, ohio
+    plan: free                        # free | starter | standard
+
+    # ── Build & Start ──
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+
+    # ── Health Check ──
+    healthCheckPath: /api/v1/health
+
+    # ── Environment Variables ──
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        sync: false                   # Set manually in dashboard
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        value: https://www.zpluseuniversity.com
+
+    # ── Auto-deploy on push ──
+    autoDeploy: true
