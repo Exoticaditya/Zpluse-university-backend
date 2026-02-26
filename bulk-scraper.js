@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { scrapeCollege } = require('./services/scraper.service');
 const { query } = require('./db');
 
@@ -93,7 +94,16 @@ const colleges = [
     { url: 'https://www.iiitb.ac.in', fallback: 'IIIT Bangalore' },
     { url: 'https://www.iiitd.ac.in', fallback: 'IIIT Delhi' },
     { url: 'https://www.iiit-bh.ac.in', fallback: 'IIIT Bhubaneswar' },
-    { url: 'https://www.iiitnr.ac.in', fallback: 'IIIT Naya Raipur' }
+    { url: 'https://www.iiitnr.ac.in', fallback: 'IIIT Naya Raipur' },
+
+    // AIIMS (Medical)
+    { url: 'https://www.aiims.edu', fallback: 'AIIMS New Delhi' },
+    { url: 'https://www.aiimsbhopal.edu.in', fallback: 'AIIMS Bhopal' },
+    { url: 'https://www.aiimsbhubaneswar.edu.in', fallback: 'AIIMS Bhubaneswar' },
+    { url: 'https://www.aiimsjodhpur.edu.in', fallback: 'AIIMS Jodhpur' },
+    { url: 'https://aiimspatna.edu.in', fallback: 'AIIMS Patna' },
+    { url: 'https://www.aiimsraipur.edu.in', fallback: 'AIIMS Raipur' },
+    { url: 'https://aiimsrishikesh.edu.in', fallback: 'AIIMS Rishikesh' }
 ];
 
 async function insertCollege(payload) {
