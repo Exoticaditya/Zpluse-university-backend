@@ -25,8 +25,9 @@ exports.scrapeAndCreate = async (req, res, next) => {
             `INSERT INTO colleges
              (name, description, city, state, country,
               logo_url, cover_image_url, website,
-              type, established_year, rating, is_featured)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+              type, established_year, rating, is_featured,
+              courses, affiliation, reviews_summary, fee_structure)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
              RETURNING *`,
             [
                 scrapedData.name,
@@ -40,7 +41,11 @@ exports.scrapeAndCreate = async (req, res, next) => {
                 scrapedData.type || 'Private',
                 scrapedData.established_year || null,
                 scrapedData.rating || 0,
-                scrapedData.is_featured || false
+                scrapedData.is_featured || false,
+                scrapedData.courses ? JSON.stringify(scrapedData.courses) : '[]',
+                scrapedData.affiliation || null,
+                scrapedData.reviews_summary || null,
+                scrapedData.fee_structure || null
             ]
         );
 

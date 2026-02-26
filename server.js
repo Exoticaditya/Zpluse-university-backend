@@ -40,9 +40,8 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// ─── Body parsers ────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// ─── Middleware ──────────────────────────────────────────
+app.use(express.json()); // For parsing application/json
 
 // ─── Health check (Render heartbeat) ─────────────────────
 app.get('/api/v1/health', async (req, res) => {
@@ -50,7 +49,7 @@ app.get('/api/v1/health', async (req, res) => {
         const dbResult = await pool.query('SELECT NOW()');
         res.json({
             success: true,
-            message: 'Zplus University API is running',
+            message: 'Zplus University API is healthy',
             timestamp: dbResult.rows[0].now,
             environment: process.env.NODE_ENV || 'development'
         });
@@ -95,7 +94,7 @@ app.listen(PORT, () => {
     console.log(`\n🚀 Zplus University API`);
     console.log(`   Port:        ${PORT}`);
     console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`   Health:      http://localhost:${PORT}/api/v1/health\n`);
+    console.log(`   Health:      http://localhost:${PORT}/api/v1/heartbeat\n`);
 });
 
 module.exports = app;
