@@ -9,6 +9,7 @@ const authorize = require('../middleware/rbac');
 
 // ─── Public routes ───────────────────────────────────────
 router.get('/', controller.getAll);      // List + search + paginate
+router.get('/stats', controller.getStats); // Global metrics
 router.get('/:id', controller.getById);     // Single college detail
 
 // ─── Admin-only routes ──────────────────────────────────

@@ -213,3 +213,30 @@ exports.remove = async (req, res, next) => {
     }
 };
 
+
+// ─── GET /api/v1/colleges/stats ──────────────────────────
+// Public — Global stats for homepage metrics
+exports.getStats = async (req, res, next) => {
+    try {
+        // 1. Total Colleges
+        const resColleges = await query('SELECT COUNT(*) FROM colleges');
+        const totalColleges = parseInt(resColleges.rows[0].count, 10);
+
+        // 2. Total Students
+        const resStudents = await query("SELECT COUNT(*) FROM users WHERE role = 'student'");
+        const totalStudents = parseInt(resStudents.rows[0].count, 10);
+
+        // 3. (Mock) Placement & Support — these could be expanded later
+        res.json({
+            success: true,
+            data: {
+                colleges: totalColleges,
+                students: totalStudents,
+                placementRate: '98%',
+                support: '24/7'
+            }
+        });
+    } catch (err) {
+        next(err);
+    }
+};
