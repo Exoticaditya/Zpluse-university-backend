@@ -105,29 +105,57 @@ exports.getById = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     try {
         const {
-            name, description, city, state, country,
-            logo_url, cover_image_url, website,
-            type, established_year, rating, is_featured
+            name, description, tagline, city, state, country,
+            logo_url, cover_image_url, website, type,
+            established_year, rating, is_featured,
+            nirf_rank, nirf_category, naac_grade, nba_accredited,
+            total_students, faculty_count, student_faculty_ratio,
+            placement_rate, avg_package, highest_package, top_recruiters,
+            courses, entrance_exams, fee_structure, scholarships,
+            affiliation, reviews_summary, facilities, gallery_images,
+            campus_area_acres, contact_email, contact_phone, social_links,
+            admission_process, admission_open, application_deadline, highlights
         } = req.body;
 
         if (!name) {
-            return res.status(400).json({
-                success: false,
-                message: 'College name is required'
-            });
+            return res.status(400).json({ success: false, message: 'College name is required' });
         }
 
         const result = await query(
             `INSERT INTO colleges
-         (name, description, city, state, country,
-          logo_url, cover_image_url, website,
-          type, established_year, rating, is_featured)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-       RETURNING *`,
+             (name, description, tagline, city, state, country,
+              logo_url, cover_image_url, website, type,
+              established_year, rating, is_featured,
+              nirf_rank, nirf_category, naac_grade, nba_accredited,
+              total_students, faculty_count, student_faculty_ratio,
+              placement_rate, avg_package, highest_package, top_recruiters,
+              courses, entrance_exams, fee_structure, scholarships,
+              affiliation, reviews_summary, facilities, gallery_images,
+              campus_area_acres, contact_email, contact_phone, social_links,
+              admission_process, admission_open, application_deadline, highlights)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,
+                     $18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,
+                     $33,$34,$35,$36,$37,$38,$39,$40)
+             RETURNING *`,
             [
-                name, description || null, city || null, state || null, country || 'India',
-                logo_url || null, cover_image_url || null, website || null,
-                type || 'Private', established_year || null, rating || 0, is_featured || false
+                name, description||null, tagline||null, city||null, state||null, country||'India',
+                logo_url||null, cover_image_url||null, website||null, type||'Private',
+                established_year||null, rating||0, is_featured||false,
+                nirf_rank||null, nirf_category||null, naac_grade||null, nba_accredited||false,
+                total_students||null, faculty_count||null, student_faculty_ratio||null,
+                placement_rate||null, avg_package||null, highest_package||null,
+                top_recruiters ? JSON.stringify(top_recruiters) : '[]',
+                courses ? JSON.stringify(courses) : '[]',
+                entrance_exams ? JSON.stringify(entrance_exams) : '[]',
+                fee_structure||null, scholarships||null,
+                affiliation||null, reviews_summary||null,
+                facilities ? JSON.stringify(facilities) : '[]',
+                gallery_images ? JSON.stringify(gallery_images) : '[]',
+                campus_area_acres||null, contact_email||null, contact_phone||null,
+                social_links ? JSON.stringify(social_links) : '{}',
+                admission_process ? JSON.stringify(admission_process) : '[]',
+                admission_open||false, application_deadline||null,
+                highlights ? JSON.stringify(highlights) : '[]'
             ]
         );
 
@@ -143,32 +171,81 @@ exports.update = async (req, res, next) => {
     try {
         const { id } = req.params;
         const {
-            name, description, city, state, country,
-            logo_url, cover_image_url, website,
-            type, established_year, rating, is_featured
+            name, description, tagline, city, state, country,
+            logo_url, cover_image_url, website, type,
+            established_year, rating, is_featured,
+            nirf_rank, nirf_category, naac_grade, nba_accredited,
+            total_students, faculty_count, student_faculty_ratio,
+            placement_rate, avg_package, highest_package, top_recruiters,
+            courses, entrance_exams, fee_structure, scholarships,
+            affiliation, reviews_summary, facilities, gallery_images,
+            campus_area_acres, contact_email, contact_phone, social_links,
+            admission_process, admission_open, application_deadline, highlights
         } = req.body;
 
         const result = await query(
             `UPDATE colleges SET
-         name             = COALESCE($1, name),
-         description      = COALESCE($2, description),
-         city             = COALESCE($3, city),
-         state            = COALESCE($4, state),
-         country          = COALESCE($5, country),
-         logo_url         = COALESCE($6, logo_url),
-         cover_image_url  = COALESCE($7, cover_image_url),
-         website          = COALESCE($8, website),
-         type             = COALESCE($9, type),
-         established_year = COALESCE($10, established_year),
-         rating           = COALESCE($11, rating),
-         is_featured      = COALESCE($12, is_featured),
-         updated_at       = NOW()
-       WHERE id = $13
-       RETURNING *`,
+             name               = COALESCE($1,  name),
+             description        = COALESCE($2,  description),
+             tagline            = COALESCE($3,  tagline),
+             city               = COALESCE($4,  city),
+             state              = COALESCE($5,  state),
+             country            = COALESCE($6,  country),
+             logo_url           = COALESCE($7,  logo_url),
+             cover_image_url    = COALESCE($8,  cover_image_url),
+             website            = COALESCE($9,  website),
+             type               = COALESCE($10, type),
+             established_year   = COALESCE($11, established_year),
+             rating             = COALESCE($12, rating),
+             is_featured        = COALESCE($13, is_featured),
+             nirf_rank          = COALESCE($14, nirf_rank),
+             nirf_category      = COALESCE($15, nirf_category),
+             naac_grade         = COALESCE($16, naac_grade),
+             nba_accredited     = COALESCE($17, nba_accredited),
+             total_students     = COALESCE($18, total_students),
+             faculty_count      = COALESCE($19, faculty_count),
+             student_faculty_ratio = COALESCE($20, student_faculty_ratio),
+             placement_rate     = COALESCE($21, placement_rate),
+             avg_package        = COALESCE($22, avg_package),
+             highest_package    = COALESCE($23, highest_package),
+             top_recruiters     = COALESCE($24::jsonb, top_recruiters),
+             courses            = COALESCE($25::jsonb, courses),
+             entrance_exams     = COALESCE($26::jsonb, entrance_exams),
+             fee_structure      = COALESCE($27, fee_structure),
+             scholarships       = COALESCE($28, scholarships),
+             affiliation        = COALESCE($29, affiliation),
+             reviews_summary    = COALESCE($30, reviews_summary),
+             facilities         = COALESCE($31::jsonb, facilities),
+             gallery_images     = COALESCE($32::jsonb, gallery_images),
+             campus_area_acres  = COALESCE($33, campus_area_acres),
+             contact_email      = COALESCE($34, contact_email),
+             contact_phone      = COALESCE($35, contact_phone),
+             social_links       = COALESCE($36::jsonb, social_links),
+             admission_process  = COALESCE($37::jsonb, admission_process),
+             admission_open     = COALESCE($38, admission_open),
+             application_deadline = COALESCE($39, application_deadline),
+             highlights         = COALESCE($40::jsonb, highlights),
+             updated_at         = NOW()
+           WHERE id = $41
+           RETURNING *`,
             [
-                name, description, city, state, country,
-                logo_url, cover_image_url, website,
-                type, established_year, rating, is_featured,
+                name, description, tagline, city, state, country,
+                logo_url, cover_image_url, website, type,
+                established_year, rating, is_featured,
+                nirf_rank, nirf_category, naac_grade, nba_accredited,
+                total_students, faculty_count, student_faculty_ratio,
+                placement_rate, avg_package, highest_package,
+                top_recruiters ? JSON.stringify(top_recruiters) : null,
+                courses ? JSON.stringify(courses) : null,
+                entrance_exams ? JSON.stringify(entrance_exams) : null,
+                fee_structure, scholarships, affiliation, reviews_summary,
+                facilities ? JSON.stringify(facilities) : null,
+                gallery_images ? JSON.stringify(gallery_images) : null,
+                campus_area_acres, contact_email, contact_phone,
+                social_links ? JSON.stringify(social_links) : null,
+                admission_process ? JSON.stringify(admission_process) : null,
+                admission_open, application_deadline,
+                highlights ? JSON.stringify(highlights) : null,
                 id
             ]
         );
