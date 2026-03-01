@@ -1,8 +1,29 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  setup-auth-trigger.js
+//  Run ONCE to create a Postgres trigger that auto-syncs Supabase Auth users
+//  into the public.users table whenever someone signs up.
+//
+//  HOW TO RUN (two options):
+//
+//  Option A — Supabase SQL Editor (recommended, no connection issues):
+//    Copy the SQL below and paste it into:
+//    Supabase Dashboard → SQL Editor → New Query → Run
+//
+//  Option B — Node.js (requires DB to be reachable):
+//    1. Set TRANSACTION_POOLER_URL in your .env
+//    2. Run: node setup-auth-trigger.js
+// ─────────────────────────────────────────────────────────────────────────────
+require('dotenv').config();
 const { Client } = require('pg');
 
-const client = new Client({
-    connectionString: 'postgresql://postgres:Aadi%40123%23%23@db.lqqsuhvrzmgpssvkqabq.supabase.co:5432/postgres'
-});
+const connectionString = process.env.TRANSACTION_POOLER_URL || process.env.DATABASE_URL;
+
+if (!connectionString) {
+    console.error('❌  Set TRANSACTION_POOLER_URL (or DATABASE_URL) in your .env file first.');
+    process.exit(1);
+}
+
+const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
 
 const triggerSql = `
 -- 1. Create a function that copies auth.users data to public.users

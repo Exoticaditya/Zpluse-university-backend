@@ -15,9 +15,9 @@
     "lms",
     "api"
   ],
-  "author": "Zplus University",
+  "author": "Zpluse University",
   "license": "ISC",
-  "description": "Backend API for Zplus University — Educational Portal",
+  "description": "Backend API for Zpluse University — Educational Portal",
   "dependencies": {
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",

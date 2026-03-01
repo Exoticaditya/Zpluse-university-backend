@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────
-#  render.yaml — Render Blueprint for Zplus University API
+#  render.yaml — Render Blueprint for Zpluse University API
 # ─────────────────────────────────────────────────────────
 # Docs: https://docs.render.com/blueprint-spec
 #
@@ -31,8 +31,21 @@ services:
         value: production
       - key: PORT
         value: 5000
-      - key: DATABASE_URL
-        sync: false                   # Set manually in dashboard
+
+      # ── DATABASE ─────────────────────────────────────────────
+      # Use the TRANSACTION POOLER URL from Supabase, NOT the
+      # direct connection URL. The direct URL is IPv6 (port 5432)
+      # and is unreachable from Render's network.
+      #
+      # Where to find it:
+      #   Supabase Dashboard → Project Settings → Database
+      #   → Connection string → Transaction Pooler
+      #   (looks like: postgresql://postgres.[ref]:[pw]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres)
+      - key: TRANSACTION_POOLER_URL
+        sync: false                   # ← SET THIS in Render dashboard
+      - key: DATABASE_URL             # Kept as fallback for local dev
+        sync: false
+
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_JWT_SECRET

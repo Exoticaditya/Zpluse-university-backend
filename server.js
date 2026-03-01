@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────
-//  server.js — Zplus University API Server
+//  server.js — Zpluse University API Server
 // ─────────────────────────────────────────────────────────
 require('dotenv').config();
 
@@ -49,7 +49,7 @@ app.get('/api/v1/health', async (req, res) => {
         const dbResult = await pool.query('SELECT NOW()');
         res.json({
             success: true,
-            message: 'Zplus University API is healthy',
+            message: 'Zpluse University API is healthy',
             timestamp: dbResult.rows[0].now,
             environment: process.env.NODE_ENV || 'development'
         });
@@ -91,10 +91,10 @@ app.use((err, req, res, _next) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`\n🚀 Zplus University API`);
+    console.log(`\n🚀 Zpluse University API`);
     console.log(`   Port:        ${PORT}`);
     console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`   Health:      http://localhost:${PORT}/api/v1/heartbeat\n`);
+    console.log(`   Health:      http://localhost:${PORT}/api/v1/health\n`);
 });
 
 module.exports = app;

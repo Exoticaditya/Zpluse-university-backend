@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════
---  Zplus University — Complete PostgreSQL Schema
+--  Zpluse University — Complete PostgreSQL Schema
 --  Target: Supabase SQL Editor (copy-paste & run)
 -- ═══════════════════════════════════════════════════════════
 --  Tables: users, colleges, courses, materials, enrollments
