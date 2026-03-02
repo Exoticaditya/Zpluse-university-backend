@@ -46,6 +46,7 @@ app.use(express.json()); // For parsing application/json
 // ─── Health check (Render heartbeat) ─────────────────────
 app.get('/api/v1/health', async (req, res) => {
     try {
+        const { pool } = require('./db'); // Ensure we get the latest state
         const dbResult = await pool.query('SELECT NOW()');
         res.json({
             success: true,
@@ -54,10 +55,19 @@ app.get('/api/v1/health', async (req, res) => {
             environment: process.env.NODE_ENV || 'development'
         });
     } catch (err) {
+        // Import db to get the masked URL logic if needed, or just re-read env
+        const connectionString = process.env.DATABASE_URL || process.env.TRANSACTION_POOLER_URL || 'none';
+        const maskedUrl = connectionString.replace(/:([^@]+)@/, ':****@');
+
         res.status(503).json({
             success: false,
             message: 'API is running but database is unreachable',
-            error: err.message
+            error: err.message,
+            diagnostics: {
+                source: process.env.DATABASE_URL ? 'DATABASE_URL' : (process.env.TRANSACTION_POOLER_URL ? 'TRANSACTION_POOLER_URL' : 'none'),
+                target: maskedUrl.split('@')[1] || 'unknown',
+                user: maskedUrl.split('://')[1]?.split(':')[0] || 'unknown'
+            }
         });
     }
 });
