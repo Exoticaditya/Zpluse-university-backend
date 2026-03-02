@@ -55,19 +55,27 @@ app.get('/api/v1/health', async (req, res) => {
             environment: process.env.NODE_ENV || 'development'
         });
     } catch (err) {
-        // Import db to get the masked URL logic if needed, or just re-read env
-        const connectionString = process.env.DATABASE_URL || process.env.TRANSACTION_POOLER_URL || 'none';
-        const maskedUrl = connectionString.replace(/:([^@]+)@/, ':****@');
+        const rawUrl = process.env.DATABASE_URL || process.env.TRANSACTION_POOLER_URL || '';
+        let diagnostics = { source: 'none', target: 'unknown', user: 'unknown' };
+
+        try {
+            if (rawUrl) {
+                const parsed = new URL(rawUrl);
+                diagnostics = {
+                    source: process.env.DATABASE_URL ? 'DATABASE_URL' : 'TRANSACTION_POOLER_URL',
+                    target: `${parsed.hostname}${parsed.port ? ':' + parsed.port : ''}${parsed.pathname}`,
+                    user: parsed.username
+                };
+            }
+        } catch (e) {
+            diagnostics.error = 'Failed to parse connection string';
+        }
 
         res.status(503).json({
             success: false,
             message: 'API is running but database is unreachable',
             error: err.message,
-            diagnostics: {
-                source: process.env.DATABASE_URL ? 'DATABASE_URL' : (process.env.TRANSACTION_POOLER_URL ? 'TRANSACTION_POOLER_URL' : 'none'),
-                target: maskedUrl.split('@')[1] || 'unknown',
-                user: maskedUrl.split('://')[1]?.split(':')[0] || 'unknown'
-            }
+            diagnostics
         });
     }
 });
