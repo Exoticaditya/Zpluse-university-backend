@@ -21,26 +21,33 @@
 // ─────────────────────────────────────────────────────────
 const { Pool } = require('pg');
 
-// TRANSACTION_POOLER_URL is preferred (IPv4, port 6543).
-// Fall back to DATABASE_URL so local dev still works.
+// Priority: DATABASE_URL (standard) then TRANSACTION_POOLER_URL (legacy/alt)
 const connectionString =
-  process.env.TRANSACTION_POOLER_URL ||
-  process.env.DATABASE_URL;
+  process.env.DATABASE_URL ||
+  process.env.TRANSACTION_POOLER_URL;
 
 if (!connectionString) {
-  console.error('❌  No database URL found. Set TRANSACTION_POOLER_URL (preferred) or DATABASE_URL.');
+  console.error('❌ No database URL found. Please set DATABASE_URL (preferred) or TRANSACTION_POOLER_URL in your environment.');
   process.exit(1);
 }
+
+// Mask the password for logs to help debug without leaking creds
+const maskedUrl = connectionString.replace(/:([^@]+)@/, ':****@');
+const hostInfo = connectionString.split('@')[1] || 'unknown host';
 
 const pool = new Pool({
   connectionString,
   ssl: {
-    rejectUnauthorized: false,   // Required for Supabase
+    rejectUnauthorized: false,
   },
-  max: 10,                       // Max connections in pool
-  idleTimeoutMillis: 30000,      // Close idle clients after 30s
-  connectionTimeoutMillis: 10000 // Fail if connect takes > 10s
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000
 });
+
+// Log connection attempt details
+console.log(`📡 Database: Attempting connection via ${process.env.DATABASE_URL ? 'DATABASE_URL' : 'TRANSACTION_POOLER_URL'}`);
+console.log(`🔗 Target: ${hostInfo}`);
 
 // Log successful connection on first query
 pool.on('connect', () => {
